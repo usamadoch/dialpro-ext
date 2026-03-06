@@ -1,0 +1,56 @@
+{
+    "manifest_version": 3,
+    "name": "DialPro — Cold Calling Assistant",
+    "version": "1.0.0",
+    "description": "Cold calling dialer extension with lead management, call logging, and callback tracking.",
+    "permissions": [
+        "storage",
+        "activeTab"
+    ],
+    "host_permissions": [
+        "http://localhost:5000/*",
+        "https://subtle-profiterole-c3cdb9.netlify.app/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://subtle-profiterole-c3cdb9.netlify.app/*"
+            ],
+            "js": [
+                "assets/content.js"
+            ],
+            "css": [],
+            "run_at": "document_idle"
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "assets/*"
+            ],
+            "matches": [
+                "https://subtle-profiterole-c3cdb9.netlify.app/*"
+            ]
+        }
+    ],
+    "action": {
+        "default_title": "DialPro",
+        "default_icon": {
+            "16": "icons/icon16.png",
+            "48": "icons/icon48.png",
+            "128": "icons/icon128.png"
+        }
+    },
+    "icons": {
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+    },
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com"
+    }
+}
