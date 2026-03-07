@@ -5,7 +5,8 @@
     "description": "Cold calling dialer extension with lead management, call logging, and callback tracking.",
     "permissions": [
         "storage",
-        "activeTab"
+        "activeTab",
+        "alarms"
     ],
     "host_permissions": [
         "__VITE_API_PERM__",

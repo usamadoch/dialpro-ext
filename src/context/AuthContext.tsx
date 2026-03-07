@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import LoadingState from '../components/Leads/LoadingState';
 
 interface User {
     id: string;
@@ -70,6 +71,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         };
 
         restoreSession();
+
+        // Listen for internal app event
+        const handleAuthExpired = () => {
+            setToken(null);
+            setUser(null);
+        };
+        window.addEventListener('dialpro_auth_expired', handleAuthExpired);
+
+        // Listen for storage changes from background or other tabs
+        const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }, areaName: string) => {
+            if (areaName === 'local' && changes.dialpro_token && !changes.dialpro_token.newValue) {
+                setToken(null);
+                setUser(null);
+            }
+        };
+
+        try {
+            chrome.storage.onChanged.addListener(handleStorageChange);
+        } catch { }
+
+        return () => {
+            window.removeEventListener('dialpro_auth_expired', handleAuthExpired);
+            try {
+                chrome.storage.onChanged.removeListener(handleStorageChange);
+            } catch { }
+        };
     }, []);
 
     const login = async (newToken: string, newUser: User) => {
@@ -98,8 +125,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     if (loading) {
-        return <div className="loading">LOADING...</div>;
+        return <LoadingState message="Initializing App..." className="h-screen w-[380px]" />;
     }
+
 
     return (
         <AuthContext.Provider

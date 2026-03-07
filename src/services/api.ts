@@ -23,6 +23,24 @@ api.interceptors.request.use(async (config) => {
     return config;
 });
 
+// Handle 401 responses to auto-logout
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        if (error.response && error.response.status === 401) {
+            // Trigger local flow to logout
+            try {
+                await chrome.storage.local.remove(['dialpro_token', 'dialpro_user']);
+            } catch {
+                localStorage.removeItem('dialpro_token');
+                localStorage.removeItem('dialpro_user');
+            }
+            window.dispatchEvent(new Event('dialpro_auth_expired'));
+        }
+        return Promise.reject(error);
+    }
+);
+
 // Auth
 export const verifyLicense = (license_key: string, device_id: string) =>
     api.post('/auth/verify-license', { license_key, device_id });

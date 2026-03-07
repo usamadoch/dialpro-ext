@@ -1,8 +1,38 @@
 // DialPro Background Service Worker
 // Handles extension lifecycle events
 
+const API_BASE = '__VITE_API_URL__';
+
 chrome.runtime.onInstalled.addListener(() => {
     console.log('DialPro extension installed');
+    // Create an alarm to check auth status every 15 minutes
+    chrome.alarms.create('dialpro_auth_check', { periodInMinutes: 15 });
+});
+
+// Listen for alarms
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+    if (alarm.name === 'dialpro_auth_check') {
+        const result = await chrome.storage.local.get('dialpro_token');
+        if (result.dialpro_token) {
+            try {
+                // Ping an endpoint to check if still valid
+                const response = await fetch(`${API_BASE}/agent/summary`, {
+                    headers: {
+                        'Authorization': `Bearer ${result.dialpro_token}`
+                    }
+                });
+
+                if (response.status === 401) {
+                    // Token is invalid/expired, remove from storage
+                    // The frontend listens to storage changes and will log out
+                    await chrome.storage.local.remove(['dialpro_token', 'dialpro_user']);
+                }
+            } catch (error) {
+                // If network fails we don't necessarily log them out, just ignore
+                console.log('Failed to check auth status:', error);
+            }
+        }
+    }
 });
 
 // Listen for messages from popup or content script
