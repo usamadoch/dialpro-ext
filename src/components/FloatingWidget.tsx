@@ -12,14 +12,26 @@ interface FloatingWidgetProps {
 }
 
 // Selectors for the target site's phone input
-const PHONE_INPUT_SELECTOR = 'input#il2, input.input[placeholder="Enter a name or number"]';
+const PHONE_INPUT_SELECTOR = 'input#il2, input.input[placeholder="Enter a name or number"], [id-test="webphone-dialpad-screen-input"]';
+const DIALPAD_BUTTON_SELECTOR = '[id-test="webphone-dialpad-dialpad-button"]';
 
 /**
  * Inject the phone number into the site's phone input field and dispatch
  * input events so Angular picks up the change.
  */
-function injectPhoneIntoSite(phone: string) {
-    const input = document.querySelector(PHONE_INPUT_SELECTOR) as HTMLInputElement | null;
+async function injectPhoneIntoSite(phone: string) {
+    let input = document.querySelector(PHONE_INPUT_SELECTOR) as HTMLInputElement | null;
+
+    if (!input) {
+        const dialpadBtn = document.querySelector(DIALPAD_BUTTON_SELECTOR) as HTMLButtonElement | null;
+        if (dialpadBtn) {
+            dialpadBtn.click();
+            // Wait a brief moment for the dial pad to render/open
+            await new Promise(resolve => setTimeout(resolve, 500));
+            input = document.querySelector(PHONE_INPUT_SELECTOR) as HTMLInputElement | null;
+        }
+    }
+
     if (!input) return false;
 
     // Focus the input

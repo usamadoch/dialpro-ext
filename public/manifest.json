@@ -8,13 +8,13 @@
         "activeTab"
     ],
     "host_permissions": [
-        "http://localhost:5000/*",
-        "https://subtle-profiterole-c3cdb9.netlify.app/*"
+        "__VITE_API_PERM__",
+        "__VITE_APP_URL__*"
     ],
     "content_scripts": [
         {
             "matches": [
-                "https://subtle-profiterole-c3cdb9.netlify.app/*"
+                "__VITE_APP_URL__*"
             ],
             "js": [
                 "assets/content.js"
@@ -29,7 +29,7 @@
                 "assets/*"
             ],
             "matches": [
-                "https://subtle-profiterole-c3cdb9.netlify.app/*"
+                "__VITE_APP_URL__*"
             ]
         }
     ],

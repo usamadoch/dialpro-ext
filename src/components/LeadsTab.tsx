@@ -147,6 +147,8 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ onPhoneChange }) => {
         }
     };
 
+
+
     const handlePrev = () => {
         setCurrentIndex(Math.max(currentIndex - 1, 0));
         setSelectedOutcome('');
@@ -187,7 +189,23 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ onPhoneChange }) => {
         return (
             <div className="fade-in">
                 <div className="section">
-                    <div className="section-tag">Your Leads ({leads.length})</div>
+                    <div className="section-tag" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                        <span>Your Leads ({leads.length})</span>
+                        <button
+                            onClick={fetchLeads}
+                            style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'var(--accent-gold)',
+                                cursor: 'pointer',
+                                fontSize: '9px',
+                                fontFamily: 'var(--font-mono)',
+                                textDecoration: 'underline'
+                            }}
+                        >
+                            REFRESH
+                        </button>
+                    </div>
                     <button
                         className="dial-btn"
                         style={{ background: '#f0a500', fontSize: '11px', marginBottom: '10px' }}
@@ -358,7 +376,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ onPhoneChange }) => {
 
 
             {/* AI Suggestions — positioned right after Call Outcome for contextual use */}
-            <div className="ai-section">
+            {/* <div className="ai-section">
                 <div className="ai-tag">
                     <div className="ai-dot"></div>AI Live Suggestions
                 </div>
@@ -367,7 +385,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ onPhoneChange }) => {
                     <div className="ai-chip"><span className="ai-num">2</span>"Totally understand, a lot of our clients said the same thing before trying us..."</div>
                     <div className="ai-chip"><span className="ai-num">3</span>"No problem at all, can I follow up with you next week instead?"</div>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 };
