@@ -19,14 +19,15 @@ const LeadContactCard: React.FC<LeadContactCardProps> = ({
     showMoreFields,
     setShowMoreFields
 }) => {
-    const hasMcField = pinnedFields.some(f => f.key === 'mc') || extraFields.some(f => f.key === 'mc');
-    const linkUrl = 
-        pinnedFields.find(f => f.key === 'link')?.value || 
-        extraFields.find(f => f.key === 'link')?.value || 
-        currentLead?.extra_info?.link;
+    const hasMcField = pinnedFields.some(f => f.key.toLowerCase().trim() === 'mc') || extraFields.some(f => f.key.toLowerCase().trim() === 'mc');
+    const linkUrl =
+        pinnedFields.find(f => f.key.toLowerCase().trim() === 'link')?.value ||
+        extraFields.find(f => f.key.toLowerCase().trim() === 'link')?.value ||
+        currentLead?.extra_info?.link ||
+        currentLead?.extra_info?.Link;
 
-    const filteredPinnedFields = hasMcField ? pinnedFields.filter(f => f.key !== 'link') : pinnedFields;
-    const filteredExtraFields = hasMcField ? extraFields.filter(f => f.key !== 'link') : extraFields;
+    const filteredPinnedFields = hasMcField ? pinnedFields.filter(f => f.key.toLowerCase().trim() !== 'link') : pinnedFields;
+    const filteredExtraFields = hasMcField ? extraFields.filter(f => f.key.toLowerCase().trim() !== 'link') : extraFields;
 
     const formatUrl = (url: string) => {
         if (!url) return '';
@@ -49,28 +50,29 @@ const LeadContactCard: React.FC<LeadContactCardProps> = ({
     };
 
     const renderField = (f: { key: string; value: string }) => {
-        const isMc = f.key === 'mc';
+        const isMc = f.key.toLowerCase().trim() === 'mc';
         const showLinkIcon = isMc && linkUrl && typeof linkUrl === 'string';
         const isExpanded = expandedFields.has(f.key);
-        
+        const isAddress = f.key.toLowerCase().trim().includes('address');
+
         return (
             <div key={f.key} className="flex gap-2 text-[13px] items-start">
                 <span className="font-bold text-primary w-20 shrink-0 capitalize pt-0.5">{formatFieldKey(f.key)}</span>
                 <div className="text-gray-600 flex items-start min-w-0 flex-1">
-                    <span 
-                        className={`${isExpanded ? 'whitespace-normal' : 'truncate'} cursor-pointer hover:text-gray-900 transition-colors pt-0.5`}
-                        onClick={() => toggleFieldExpansion(f.key)}
-                        title={isExpanded ? "Click to collapse" : "Click to expand"}
+                    <span
+                        className={`${isAddress && isExpanded ? 'whitespace-normal' : 'truncate'} ${isAddress ? 'cursor-pointer hover:text-gray-900 transition-colors' : ''} pt-0.5`}
+                        onClick={isAddress ? () => toggleFieldExpansion(f.key) : undefined}
+                        title={isAddress ? (isExpanded ? "Click to collapse" : "Click to expand") : undefined}
                     >
                         {f.value}
                     </span>
                     {showLinkIcon && (
-                        <a 
-                            href={formatUrl(linkUrl)} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            title="Open Link" 
-                            className="flex items-center shrink-0 pt-0.5 ml-1.5" 
+                        <a
+                            href={formatUrl(linkUrl)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Open Link"
+                            className="flex items-center shrink-0 pt-0.5 ml-1.5"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500 hover:text-blue-700 cursor-pointer">
