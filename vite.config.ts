@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
                         manifest = manifest.replace(/__VITE_APP_URL__/g, env.VITE_APP_URL || '');
 
                         // Handle API URL specifically (used in background script)
-                        const apiUrl = env.VITE_API_URL || 'http://localhost:5000/api';
+                        const apiUrl = env.VITE_API_URL || 'http://localhost:3000/api';
 
                         // Handle API Permission replacement
                         // If VITE_API_URL is "https://example.com/api", we want "https://example.com/*"
@@ -47,7 +47,7 @@ export default defineConfig(({ mode }) => {
                     const bgPath = resolve(__dirname, 'dist/background.js');
                     if (fs.existsSync(bgPath)) {
                         let bgContent = fs.readFileSync(bgPath, 'utf-8');
-                        const apiUrl = env.VITE_API_URL || 'http://localhost:5000/api';
+                        const apiUrl = env.VITE_API_URL || 'http://localhost:3000/api';
                         bgContent = bgContent.replace(/__VITE_API_URL__/g, apiUrl);
                         fs.writeFileSync(bgPath, bgContent);
                     }

@@ -24,7 +24,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ onPhoneChange }) => {
     const [leads, setLeads] = useState<Lead[]>([]);
     const [assignment, setAssignment] = useState<AssignmentInfo | null>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [selectedOutcome, setSelectedOutcome] = useState('');
+    const [selectedOutcome, setSelectedOutcome] = useState('no_answer');
     const [notes, setNotes] = useState('');
     const [callbackDate, setCallbackDate] = useState('');
     const [showDialer, setShowDialer] = useState(false);
@@ -104,7 +104,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ onPhoneChange }) => {
             try {
                 await logCall({
                     lead_id: currentLead._id,
-                    list_id: assignment.list_id,
+                    list_id: currentLead.list_id || assignment.list_id,
                     outcome: selectedOutcome,
                     notes,
                     callback_date: selectedOutcome === 'callback' ? callbackDate : undefined,
@@ -119,15 +119,19 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ onPhoneChange }) => {
         setCurrentIndex(nextIndex);
         resetCurrentFeedback();
 
+        const nextLead = leads[nextIndex];
+
         try {
-            await updatePosition(assignment.id, nextIndex + 1);
+            if (nextLead) {
+                await updatePosition(nextLead.assignment_id || assignment.id, nextLead.position);
+            }
         } catch (err) {
             console.error('Failed to update position:', err);
         }
     };
 
     const resetCurrentFeedback = () => {
-        setSelectedOutcome('');
+        setSelectedOutcome('no_answer');
         setNotes('');
         setCallbackDate('');
         setShowMoreFields(false);

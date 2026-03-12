@@ -7,6 +7,10 @@ export interface Lead {
     extra_info: Record<string, any>;
     position: number;
     status: string;
+    list_id?: string;
+    assignment_id?: string;
+    list_name?: string;
+    assigned_at?: string;
 }
 
 export interface AssignmentInfo {
